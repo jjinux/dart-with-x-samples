@@ -3,3 +3,10 @@
 
 # Dart
 packages
+
+# GWT
+gwt/GwtApplication/.gwt
+gwt/GwtApplication/gwt-unitCache
+gwt/GwtApplication/war/WEB-INF/classes
+gwt/GwtApplication/war/WEB-INF/deploy
+gwt/GwtApplication/war/gwtapplication
