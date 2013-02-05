@@ -8,7 +8,7 @@ Samples
 
 Here are the samples we've created so far:
 
-* [Dart with Google Web Toolkit](https://github.com/dart-lang/dart-with-x/tree/master/gwt)
+* [Dart with Google Web Toolkit](https://github.com/dart-lang/dart-with-x/tree/master/gwt/GwtApplication)
 
 Contributing
 ------------
