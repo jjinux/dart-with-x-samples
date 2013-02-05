@@ -24,17 +24,12 @@ dependencies are installed:
 Interesting Files
 -----------------
 
-src/org/dartlang/gwtapplication/client/GwtApplication.java
-	This is the main GWT application.
+* `src/org/dartlang/gwtapplication/client/GwtApplication.java` The main GWT application.
 
-src/org/dartlang/gwtapplication/server/JsonServlet.java
-	This is a simple Java servlet that serves JSON.
+* `src/org/dartlang/gwtapplication/server/JsonServlet.java` A simple Java servlet that serves JSON.
 
-war
-	This is the webroot. It contains CSS and HTML files.
+* `war` The webroot. It contains CSS and HTML files.
 
-war/dart_application
-	This is the Dart application. It has a pubspec.yaml in it.
+* `war/dart_application` The Dart application. It has a pubspec.yaml in it.
 
-war/dart_application/web/dart_application.dart
-	This is where most of the Dart source code is.
+* `war/dart_application/web/dart_application.dart` Where most of the Dart source code is.
