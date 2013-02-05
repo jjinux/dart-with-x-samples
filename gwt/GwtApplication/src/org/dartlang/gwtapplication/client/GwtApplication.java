@@ -1,6 +1,7 @@
 package org.dartlang.gwtapplication.client;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
@@ -36,6 +37,19 @@ public class GwtApplication implements EntryPoint {
     });
     
     listenForPostMessage();
+    
+    // Add a button to call dartApplicationModule.dartCallback.
+    Button callDartCallback = new Button("Call Dart callback from GWT");
+    mainPanel.add(callDartCallback);
+    callDartCallback.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        String result = callDartCallback(
+            7, "Hello from GWT", createObjectForCallback());
+        Label resultLabel = new Label();
+        resultLabel.setText(result);
+        mainPanel.add(resultLabel);
+      }
+    });
   }
   
   protected native void postMessage(String msg) /*-{
@@ -53,7 +67,16 @@ public class GwtApplication implements EntryPoint {
   private void onPostMessage(String data, String origin) {
     Label msgLabel = new Label();
     msgLabel.setText("GWT received a postMessage: Data: " +
-        data + " Origin: " + origin);
+        data + ", Origin: " + origin);
     mainPanel.add(msgLabel);
   }
+  
+  private final native String callDartCallback(int n, String s,
+      JavaScriptObject obj) /*-{
+    return $wnd.dartApplicationModule.dartCallback(n, s, obj);    
+  }-*/;  
+      
+  private final native JavaScriptObject createObjectForCallback() /*-{
+    return {"hello": "from GWT"};
+  }-*/;
 }
