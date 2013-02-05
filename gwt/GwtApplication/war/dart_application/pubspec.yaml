@@ -2,3 +2,5 @@ name: dart_application
 
 dependencies:
   browser: ">=0.3.2"
+  js:
+    hosted: js
