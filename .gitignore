@@ -1,10 +1,10 @@
-# Java
-.class
-
 # Dart
 packages
 
 # GWT
+# I'm leaving the *.jar files in Git since this project doesn't use Maven.
+*.class
+*.war
 gwt/GwtApplication/.gwt
 gwt/GwtApplication/gwt-unitCache
 gwt/GwtApplication/war/WEB-INF/classes
