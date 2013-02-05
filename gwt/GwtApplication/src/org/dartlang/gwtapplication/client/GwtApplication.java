@@ -23,9 +23,7 @@ public class GwtApplication implements EntryPoint {
     RootPanel.get("gwtDiv").add(mainPanel);
     
     // Say that the application has been loaded.
-    Label gwtLoadedLabel = new Label();
-    gwtLoadedLabel.setText("GWT application loaded");
-    mainPanel.add(gwtLoadedLabel);
+    printString("GWT application loaded");
     
     // Add a button to call postMessage.
     Button postMessageButton = new Button("Post message from GWT");
@@ -45,11 +43,17 @@ public class GwtApplication implements EntryPoint {
       public void onClick(ClickEvent event) {
         String result = callDartCallback(
             7, "Hello from GWT", createObjectForCallback());
-        Label resultLabel = new Label();
-        resultLabel.setText(result);
-        mainPanel.add(resultLabel);
+        printString(result);
       }
     });
+    
+    initGwtApplicationModule();
+  }
+  
+  private void printString(String s) {
+    Label label = new Label();
+    label.setText(s);
+    mainPanel.add(label);
   }
   
   protected native void postMessage(String msg) /*-{
@@ -65,10 +69,8 @@ public class GwtApplication implements EntryPoint {
   }-*/;
   
   private void onPostMessage(String data, String origin) {
-    Label msgLabel = new Label();
-    msgLabel.setText("GWT received a postMessage: Data: " +
+    printString("GWT received a postMessage: Data: " +
         data + ", Origin: " + origin);
-    mainPanel.add(msgLabel);
   }
   
   private final native String callDartCallback(int n, String s,
@@ -79,4 +81,30 @@ public class GwtApplication implements EntryPoint {
   private final native JavaScriptObject createObjectForCallback() /*-{
     return {"hello": "from GWT"};
   }-*/;
+
+  private final native void initGwtApplicationModule() /*-{
+    var that = this;
+    $wnd.gwtApplicationModule = {
+      gwtCallback: function(n, s, obj) {
+        return that.@org.dartlang.gwtapplication.client.GwtApplication::gwtCallback(ILjava/lang/String;Lorg/dartlang/gwtapplication/client/JavaScriptObjectPassedFromDart;)(
+          n, s, obj);
+      }
+    };
+  }-*/;
+  
+  private String gwtCallback(int n, String s, JavaScriptObjectPassedFromDart obj) {
+    printString("GWT callback called with " +
+        "n: " + n + ", " +
+        "s: " + s + ", " +
+        "obj.hello: " + obj.hello());
+    return "GWT received the callback";
+  }
+}
+
+/** This is a JavaScript overlay type. */
+class JavaScriptObjectPassedFromDart extends JavaScriptObject {
+
+  protected JavaScriptObjectPassedFromDart() {}
+
+  public final native String hello() /*-{ return this.hello; }-*/;
 }

@@ -1,5 +1,4 @@
 import "dart:html";
-import "dart:json" as JSON;
 import 'package:js/js.dart' as js;
 
 DivElement dartDiv;
@@ -7,20 +6,16 @@ DivElement dartDiv;
 main() {
   // Say that the application has been loaded.
   dartDiv = query("#dartDiv");
-  dartDiv.appendHtml("<div>Dart application loaded</div>");
+  printString("Dart application loaded");
   
-  // Request some JSON from the server. Of course, parsing it here is
-  // silly, but I'm showing it for completeness.
-  var url = "/gwt_application/json_servlet";
-  new HttpRequest.get(url, (req) {
-    var json = JSON.parse(req.responseText);
-    var escaped = htmlEscape(JSON.stringify(json));
-    dartDiv.appendHtml("<div>Here's the JSON I got: $escaped</div>");
+  // Request some JSON from the server. You can use the "dart:json" library
+  // to parse it.
+  new HttpRequest.get("/gwt_application/json_servlet", (req) {
+    printString("Here's the JSON I got: ${req.responseText}");
   });
 
   // Add a button to call postMessage.
   var postMessageButton = new ButtonElement()
-    ..id = "postMessage"
     ..text = "Post message from Dart"
     ..classes.add("gwt-Button")  // For consistency
     ..onClick.listen((e) => window.postMessage("Hello from Dart!", "*"));
@@ -28,12 +23,10 @@ main() {
   
   // Receive postMessage events.
   window.onMessage.listen((e) {
-    dartDiv.appendHtml("""
-      <div>
-        Dart received a postMessage:
-        Data: ${htmlEscape(e.data)},
-        Origin: ${htmlEscape(e.origin)}
-      </div>
+    printString("""
+      Dart received a postMessage:
+      Data: ${e.data},
+      Origin: ${e.origin}
     """);
   });
   
@@ -43,24 +36,33 @@ main() {
       "dartCallback": new js.Callback.many(dartCallback)
     });    
   });
+  
+  // Add a button to call gwtApplicationModule.gwtCallback.
+  var callGwtCallback = new ButtonElement()
+    ..text = "Call GWT callback from Dart"
+    ..classes.add("gwt-Button")  // For consistency
+    ..onClick.listen((e) {
+      js.scoped(() {
+        var result = js.context.gwtApplicationModule.gwtCallback(
+            8, "Hello from Dart", js.map({'hello': 'from Dart'}));
+        printString(result);
+      });
+    });
+  dartDiv.children.add(callGwtCallback);
+}
+
+void printString(String s) {
+  var div = new DivElement()
+    ..text = s;
+  dartDiv.children.add(div);
 }
 
 String dartCallback(int n, String s, js.Proxy obj) {
-  dartDiv.appendHtml("""
-    <div>
-      Callback called with
-      n: ${htmlEscape(n.toString())},
-      s: ${htmlEscape(s)},
-      obj.hello: ${htmlEscape(obj.hello)}
-    </div>
+  printString("""
+    Dart callback called with
+    n: $n,
+    s: $s,
+    obj.hello: ${obj.hello}
   """);
   return "Dart received the callback";
-}
-        
-String htmlEscape(String text) {
-  return text.replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&apos;");
 }
