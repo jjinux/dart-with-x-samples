@@ -1,5 +1,8 @@
 # Dart
 packages
+*.dart.js
+*.dart.js.deps
+*.dart.js.map
 
 # GWT
 # I'm leaving the *.jar files in Git since this project doesn't use Maven.
