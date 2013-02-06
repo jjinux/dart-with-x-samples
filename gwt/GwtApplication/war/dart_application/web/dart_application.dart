@@ -10,8 +10,10 @@ main() {
   
   // Request some JSON from the server. You can use the "dart:json" library
   // to parse it.
-  new HttpRequest.get("/gwt_application/json_servlet", (req) {
-    printString("Here's the JSON I got: ${req.responseText}");
+  HttpRequest.getString("/gwt_application/json_servlet").then((json) {
+    printString("Here's the JSON I got: $json");
+  }).catchError((e) {
+    printString("Couldn't fetch JSON: ${e.error}");
   });
 
   // Add a button to call postMessage.
