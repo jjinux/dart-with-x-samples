@@ -24,6 +24,8 @@ dependencies are installed:
 Interesting Files
 -----------------
 
+* `transcript.md` The transcript for a video I plan on recording to explain this sample.
+
 * `src/org/dartlang/gwtapplication/client/GwtApplication.java` The main GWT application.
 
 * `src/org/dartlang/gwtapplication/server/JsonServlet.java` A simple Java servlet that serves JSON.
