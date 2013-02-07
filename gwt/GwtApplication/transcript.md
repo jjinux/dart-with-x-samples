@@ -15,7 +15,7 @@ sample application. The sample also makes use of Google App Engine for Java.
 
 If you want to check out the sample, you can can download the source code at:
 
-http://bit.ly/YBwheM.
+http://bit.ly/dart_with_gwt
 
 Slide: Setting up Your Development Environment
 ----------------------------------------------
@@ -131,6 +131,14 @@ installed the Google Web Toolkit plugin for Chrome, it'll walk you through
 that.
 
 Remember, GWT takes a little while to fire up.
+
+By the way, if you downloaded the source code for the sample project, and
+you're trying to get it to work, remember that to run the Dart code, you need
+to either use Dartium (that is, the copy of Chromium that comes with Dart
+Editor), or you need to compile the code to JavaScript using dart2js (which,
+again, can be done with Dart Editor). It's a common mistake to try to run the
+code in regular Chrome before you've compiled the Dart to JavaScript. That
+won't work--yet.
 
 Demo: Edit GwtApplication.html
 ------------------------------
@@ -552,27 +560,12 @@ deploy it to Google App Engine, and try it out in a browser other than
 Dartium. However, since there's nothing particularly new or difficult about
 that, I'll leave it as an exercise for the reader.
 
-Slide: Thanks for Watching!
----------------------------
+Demo: Show the references in the transcript on GitHub
+-----------------------------------------------------
 
 As I was building this sample, I made heavy use of the GWT and Dart
-documentation. I kept a list of links that I found particularly helpful. You
-can get a full list of references in the video transcript, and you can also
-download the sample source code from GitHub at:
-
-	http://bit.ly/YBwheM
-
-If you'd like to learn more about Dart, check out (http://dartlang.org).
-
-If you have any questions about using Dart with GWT, post them to
-StackOverflow using the tags "dart" and "gwt".
-
-Thanks for watching!
-
-Show my profile picture and (gplus.to/jjinux).
-
-References
-----------
+documentation, and I kept a list of links that I found particularly helpful.
+You can check the transcript for all the details.
 
 Generating JSON on the server:
     https://developers.google.com/web-toolkit/doc/latest/tutorial/JSON
@@ -607,6 +600,22 @@ Serving static files under App Engine:
 
 Using JavaScript from Dart: The js Library:
 	http://www.dartlang.org/articles/js-dart-interop/
+
+Slide: Thanks for Watching!
+---------------------------
+
+Thanks for watching!
+
+You can download the sample source code and the transcript for this video from:
+
+	http://bit.ly/dart_with_gwt
+
+If you'd like to learn more about Dart, check out (http://dartlang.org).
+
+If you have any questions about using Dart with GWT, post them to
+StackOverflow using the tags "dart" and "gwt".
+
+Show my profile picture and (gplus.to/jjinux).
 
 Video: Dart Intro Video
 -----------------------
