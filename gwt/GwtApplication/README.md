@@ -4,6 +4,8 @@ Dart with Google Web Toolkit
 This is an example of how to use Dart with GWT. It also makes use of Google
 App Engine for Java.
 
+Project URL: http://bit.ly/dart_with_gwt
+
 Setup
 -----
 
@@ -20,6 +22,13 @@ or you can run the following to make sure all the Dart
 dependencies are installed:
 
 	$ (cd war/dart_application && pub install)
+
+Remember that to run the Dart code, you need to either use Dartium (that is,
+the copy of Chromium that comes with Dart Editor), or you need to compile the
+code to JavaScript using dart2js (which, again, can be done with Dart Editor).
+
+When you deploy the code to Google App Engine, remember to compile both the
+GWT code and the Dart code to JavaScript.
 
 Interesting Files
 -----------------
