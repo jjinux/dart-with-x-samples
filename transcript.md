@@ -552,14 +552,27 @@ deploy it to Google App Engine, and try it out in a browser other than
 Dartium. However, since there's nothing particularly new or difficult about
 that, I'll leave it as an exercise for the reader.
 
+Slide: Thanks for Watching!
+---------------------------
+
+As I was building this sample, I made heavy use of the GWT and Dart
+documentation. I kept a list of links that I found particularly helpful. You
+can get a full list of references in the video transcript, and you can also
+download the sample source code from GitHub at:
+
+	http://bit.ly/YBwheM
+
+If you'd like to learn more about Dart, check out (http://dartlang.org).
+
+If you have any questions about using Dart with GWT, post them to
+StackOverflow using the tags "dart" and "gwt".
+
+Thanks for watching!
+
+Show my profile picture and (gplus.to/jjinux).
+
 References
 ----------
-
-I made heavy use of the GWT and Dart documenation as I built this sample.
-Here are some links that I found particularly helpful.
-
-Project homepage:
-	http://bit.ly/YBwheM
 
 Generating JSON on the server:
     https://developers.google.com/web-toolkit/doc/latest/tutorial/JSON
