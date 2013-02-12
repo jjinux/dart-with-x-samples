@@ -2,6 +2,8 @@ import "dart:html";
 import 'package:js/js.dart' as js;
 
 DivElement dartDiv;
+EventStreamProvider<CustomEvent> customEventStreamProvider =
+    new EventStreamProvider<CustomEvent>("CustomGwtEvent");
 
 main() {
   // Say that the application has been loaded.
@@ -32,13 +34,6 @@ main() {
     """);
   });
   
-  // Setup a callback on window.dartApplicationModule.dartCallback.
-  js.scoped(() {
-    js.context.dartApplicationModule = js.map({
-      "dartCallback": new js.Callback.many(dartCallback)
-    });    
-  });
-  
   // Add a button to call gwtApplicationModule.gwtCallback.
   var callGwtCallback = new ButtonElement()
     ..text = "Call GWT callback from Dart"
@@ -51,6 +46,41 @@ main() {
       });
     });
   dartDiv.children.add(callGwtCallback);
+  
+  // Setup a callback on window.dartApplicationModule.dartCallback.
+  js.scoped(() {
+    js.context.dartApplicationModule = js.map({
+      "dartCallback": new js.Callback.many(dartCallback)
+    });    
+  });
+    
+  // Add a button to generate a CustomEvent called CustomDartEvent.
+  var customEventButton = new ButtonElement()
+    ..text = "Generate custom Dart event"
+    ..classes.add("gwt-Button")  // For consistency
+    ..onClick.listen((e) {
+      var detail = {
+        "n": 8,
+        "s": "Hello from Dart",
+        "obj": {
+          "hello": "from Dart"          
+        }
+      };  
+      var event = new CustomEvent("CustomDartEvent",
+          canBubble: false, cancelable: false, detail: detail);
+      window.dispatchEvent(event);
+    });
+  dartDiv.children.add(customEventButton);
+  
+  // Listen for CustomEvents called CustomGwtEvent.
+  customEventStreamProvider.forTarget(window).listen((e) {
+    printString("""
+      Received a ${e.type} with
+      n: ${e.detail["n"]},
+      s: ${e.detail["s"]},
+      obj.hello: ${e.detail["obj"]["hello"]}
+    """);
+  });
 }
 
 void printString(String s) {

@@ -9,6 +9,16 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
+import elemental.client.Browser;
+import elemental.dom.Document;
+import elemental.events.CustomEvent;
+import elemental.events.Event;
+import elemental.events.EventListener;
+import elemental.html.Window;
+import elemental.js.json.JsJsonNumber;
+import elemental.js.json.JsJsonObject;
+import elemental.json.JsonObject;
+
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
  */
@@ -48,6 +58,38 @@ public class GwtApplication implements EntryPoint {
     });
     
     initGwtApplicationModule();
+
+    // Add a button to generate a CustomEvent called CustomGwtEvent.
+    final Document document = Browser.getDocument();
+    final Window window = Browser.getWindow();
+    Button generateCustomGwtEvent = new Button("Generate custom GWT event");
+    mainPanel.add(generateCustomGwtEvent);
+    generateCustomGwtEvent.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        CustomEvent customEvent = (CustomEvent) document.createEvent("CustomEvent");
+        JsonObject details = JsJsonObject.create();
+        details.put("n", JsJsonNumber.create(7));
+        details.put("s", "Hello from GWT");
+        JsonObject obj = JsJsonObject.create();
+        obj.put("hello", "from GWT");
+        details.put("obj", obj);
+        customEvent.initCustomEvent("CustomGwtEvent", false, false, details);
+        window.dispatchEvent(customEvent);
+      }
+    });
+
+    // Listen for CustomEvent called CustomDartEvent.
+    window.addEventListener("CustomDartEvent", new EventListener() {
+      public void handleEvent(Event evt) {
+        CustomEvent customEvent = (CustomEvent) evt;
+        JsonObject details = (JsonObject) customEvent.getDetail();
+        JsonObject obj = (JsonObject) details.get("obj");
+        printString("Received a " + customEvent.getType() + " with " + 
+            "n: " + details.get("n") + ", " +
+            "s: " + details.get("s") + ", " +
+            "obj.hello: " + obj.get("hello"));
+      }
+    }, false);
   }
   
   private void printString(String s) {
