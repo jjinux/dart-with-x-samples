@@ -67,13 +67,13 @@ public class GwtApplication implements EntryPoint {
     generateCustomGwtEvent.addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
         CustomEvent customEvent = (CustomEvent) document.createEvent("CustomEvent");
-        JsonObject details = JsJsonObject.create();
-        details.put("n", JsJsonNumber.create(7));
-        details.put("s", "Hello from GWT");
+        JsonObject detail = JsJsonObject.create();
+        detail.put("n", JsJsonNumber.create(7));
+        detail.put("s", "Hello from GWT");
         JsonObject obj = JsJsonObject.create();
         obj.put("hello", "from GWT");
-        details.put("obj", obj);
-        customEvent.initCustomEvent("CustomGwtEvent", false, false, details);
+        detail.put("obj", obj);
+        customEvent.initCustomEvent("CustomGwtEvent", false, false, detail);
         window.dispatchEvent(customEvent);
       }
     });
@@ -82,11 +82,11 @@ public class GwtApplication implements EntryPoint {
     window.addEventListener("CustomDartEvent", new EventListener() {
       public void handleEvent(Event evt) {
         CustomEvent customEvent = (CustomEvent) evt;
-        JsonObject details = (JsonObject) customEvent.getDetail();
-        JsonObject obj = (JsonObject) details.get("obj");
+        JsonObject detail = (JsonObject) customEvent.getDetail();
+        JsonObject obj = (JsonObject) detail.get("obj");
         printString("Received a " + customEvent.getType() + " with " + 
-            "n: " + details.get("n") + ", " +
-            "s: " + details.get("s") + ", " +
+            "n: " + detail.get("n") + ", " +
+            "s: " + detail.get("s") + ", " +
             "obj.hello: " + obj.get("hello"));
       }
     }, false);
