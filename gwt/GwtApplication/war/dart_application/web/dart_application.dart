@@ -1,4 +1,5 @@
 import "dart:html";
+import "dart:json" as JSON;
 import 'package:js/js.dart' as js;
 
 DivElement dartDiv;
@@ -67,18 +68,19 @@ main() {
         }
       };  
       var event = new CustomEvent("CustomDartEvent",
-          canBubble: false, cancelable: false, detail: detail);
+          canBubble: false, cancelable: false, detail: JSON.stringify(detail));
       window.dispatchEvent(event);
     });
   dartDiv.children.add(customEventButton);
   
   // Listen for CustomEvents called CustomGwtEvent.
   customEventStreamProvider.forTarget(window).listen((e) {
+    var detail = JSON.parse(e.detail);
     printString("""
       Received a ${e.type} with
-      n: ${e.detail["n"]},
-      s: ${e.detail["s"]},
-      obj.hello: ${e.detail["obj"]["hello"]}
+      n: ${detail["n"]},
+      s: ${detail["s"]},
+      obj.hello: ${detail["obj"]["hello"]}
     """);
   });
 }

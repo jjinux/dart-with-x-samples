@@ -17,6 +17,7 @@ import elemental.events.EventListener;
 import elemental.html.Window;
 import elemental.js.json.JsJsonNumber;
 import elemental.js.json.JsJsonObject;
+import elemental.json.Json;
 import elemental.json.JsonObject;
 
 /**
@@ -73,7 +74,7 @@ public class GwtApplication implements EntryPoint {
         JsonObject obj = JsJsonObject.create();
         obj.put("hello", "from GWT");
         detail.put("obj", obj);
-        customEvent.initCustomEvent("CustomGwtEvent", false, false, detail);
+        customEvent.initCustomEvent("CustomGwtEvent", false, false, detail.toJson());
         window.dispatchEvent(customEvent);
       }
     });
@@ -82,9 +83,9 @@ public class GwtApplication implements EntryPoint {
     window.addEventListener("CustomDartEvent", new EventListener() {
       public void handleEvent(Event evt) {
         CustomEvent customEvent = (CustomEvent) evt;
-        JsonObject detail = (JsonObject) customEvent.getDetail();
-        JsonObject obj = (JsonObject) detail.get("obj");
-        printString("Received a " + customEvent.getType() + " with " + 
+        JsonObject detail = Json.parse((String) customEvent.getDetail());
+        JsonObject obj = detail.get("obj");
+        printString("Received a " + customEvent.getType() + " with " +
             "n: " + detail.get("n") + ", " +
             "s: " + detail.get("s") + ", " +
             "obj.hello: " + obj.get("hello"));

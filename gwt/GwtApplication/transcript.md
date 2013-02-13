@@ -1,23 +1,38 @@
 Transcript
 ==========
 
-Video: Dart Intro Video
+Video: Dart intro video
 -----------------------
 
 Slide: Dart with Google Web Toolkit
 -----------------------------------
 
 Hi, my name is JJ Behrens. I'm a developer advocate for Dart. In this episode
-of Dartisans, I'm going to show you how to use Dart with Google Web Toolkit.
+of Dartisans, I'm going to show you a variety of ways to use Dart with Google
+Web Toolkit. Along the way, I'll build a sample application that demonstrates
+each of these techniques. If you'd like to download the sample code, here's
+the URL:
 
-In order to demonstrate how to get Dart and GWT to work together, I've built a
-sample application. The sample also makes use of Google App Engine for Java.
+	http://bit.ly/dart_with_gwt
 
-If you want to check out the sample, you can can download the source code at:
+Slide: Dart with Google Web Toolkit
+-----------------------------------
 
-http://bit.ly/dart_with_gwt
+There are a lot of ways in which you can build an application that makes use
+of Dart with Google Web Toolkit. In this video, I'm going to show you how to:
 
-Slide: Setting up Your Development Environment
+* Setup your development environment
+* Use GWT and Dart to manage different parts of the same page
+* Use Dart to retrieve JSON from a Java servlet
+* Use window.postMessage and JSNI to pass messages between GWT and Dart
+* Use JavaScript, JSNI, and Dart's js package for synchronous interoperability between GWT and Dart
+* Use CustomEvent objects and Elemental to pass messages between GWT and Dart
+
+Rather than show you a one-size-fits-all solution, I decided to show you a
+bunch of approaches so that you could pick the right tool for the job. Each of
+them has stengths and weaknesses, and I'll cover those along the way as well.
+
+Slide: Setting up your development environment
 ----------------------------------------------
 
 I used Eclipse and Dart Editor to build the sample application.
@@ -82,7 +97,14 @@ pretty well for me. You can still use Eclipse with the EGit plugin to commit
 your Dart files to Git, but I tend to use the command line to interact with
 Git because that's where I'm most comfortable.
 
-Demo: Creating a GWT Application
+Slide: Using GWT and Dart to manage different parts of the same page
+--------------------------------------------------------------------
+
+Let's start by creating a GWT application. Then, I'll embed a Dart application
+within it. Finally, I'll show how to use GWT and Dart to manage different
+parts of the same page.
+
+Demo: Creating a GWT application
 --------------------------------
 
 GWT and Dart each have their own requirements for how your project should be
@@ -108,7 +130,7 @@ Demo: Show .gitignore in Sublime Text 2
 
 By the way, if you're using Git, here's my .gitignore file.
 
-Demo: Empty Out the Sample GWT Code
+Demo: Empty out the sample GWT code
 -----------------------------------
 
 Now, let's get rid of most of the sample GWT code that Eclipse created.
@@ -120,7 +142,7 @@ won't start correctly.
 
 I'm going to mostly empty out the GwtApplication class.
 
-Demo: Start up the Server
+Demo: Start up the server
 -------------------------
 
 To fire up the GWT application in Eclipse, right click on the application in
@@ -139,6 +161,12 @@ Editor), or you need to compile the code to JavaScript using dart2js (which,
 again, can be done with Dart Editor). It's a common mistake to try to run the
 code in regular Chrome before you've compiled the Dart to JavaScript. That
 won't work--yet.
+
+I should also mention that although GWT's Development Mode works for most of
+the code in this tutorial, it doesn't yet work for Elemental, so if you've
+downloaded the sample code, you'll need to actually compile it and strip off
+the "?gwt.codesvr=127.0.0.1:9997" part of the URL before you can view the
+application.
 
 Demo: Edit GwtApplication.html
 ------------------------------
@@ -169,8 +197,7 @@ Dart can tie into.
 It's perfectly acceptable for GWT and Dart to manage different parts of the
 same HTML page.
 
-Later, I'll show how they can interact even more closely thanks to JavaScript
-interoperability.
+Later, I'll show how they can interact even more closely.
 
 Demo: Edit GwtApplication.java
 ------------------------------
@@ -202,7 +229,7 @@ main() function.
 
 First, I'll query for the dartDiv.
 
-Then, I'll create a printString method like I did for GWT. Notice that cool
+Then, I'll create a printString method like I did for GWT. Notice the cool
 method cascade syntax that saves me from writing div two times. Also notice
 that I'm setting the text property of the DivElement rather than the innerHtml
 property. That way I don't have to worry about cross-site scripting attacks.
@@ -212,7 +239,7 @@ Now we can call printString to say that the Dart application has loaded.
 At this point, I could compile the Dart to JavaScript. However, during
 development, it's much faster to run the code in Dartium.
 
-Demo: Execute the Code in Dartium
+Demo: Execute the code in Dartium
 ---------------------------------
 
 Copy the URL for the app from Eclipse, and open up the copy of Chromium (aka
@@ -224,8 +251,26 @@ Developer Plugin" into Dartium.
 If everything went smoothly, we should see the output from Dart in the context
 of our GWT application running in Dartium. Fantastic!
 
-Slide: Using Dart to Talk to a Java Servlet
--------------------------------------------
+Demo: Debugging the code in Dartium
+-----------------------------------
+
+Now's a great time for me to show you how to debug your code in Dart Editor.
+Even though the code is being served from a web server running in Eclipse, you
+can still debug the code in Dart Editor. I just need to create a custom launch
+configuration with the correct URL.
+
+Demo: Debugging the code using source maps
+------------------------------------------
+
+Another option is to debug the code using Chromium's Dev Tools and sourcemaps.
+This is perfect for when you've already compiled your code to JavaScript, but
+want to debug it using the Dart source code.
+
+Notice that I'm using Chrome to debug the source code even though the normal
+version of Chrome doesn't yet understand Dart code.
+
+Slide: Using Dart to retrieve JSON from a Java servlet
+----------------------------------------------------
 
 If you're using GWT, it's very likely you have Java on the server too. Hence,
 it's important that your Dart code be able to talk to your Java code on the
@@ -245,7 +290,7 @@ Demo: JsonServlet.java
 ----------------------
 
 Here is the code for a servlet that serves JSON. In this code, I'm hardcoding
-the JSON, but naturally, you can generate the JSON dynamically using a JSON
+the JSON, but naturally, you could generate the JSON dynamically using a JSON
 library.
 
 Demo: web.xml
@@ -280,21 +325,24 @@ code will look familiar if you're a Dart developer.
 In this code, I'm just printing out the JSON response, but it's trivial to
 parse it using the "dart:json" library.
 
-Slide: Getting Dart and GWT to talk to one another
---------------------------------------------------
+Slide: Using window.postMessage and JSNI to pass messages between GWT and Dart
+------------------------------------------------------------------------------
 
 Now that we've covered getting Dart to talk to your Java server, let's cover
 how to get Dart and  GWT to talk to one another.
 
 One approach that HTML5 provides for getting different things to talk to each
 in other in a browser is window.postMessage. You can use window.postMessage
-for lots of things such as communicating with Native Client or getting web
-pages from different domains to communicate.
+for lots of things such as communicating with your C code written using NaCL
+or getting web pages from different domains to communicate.
 
-It's also one way of getting Dart and GWT to talk to one another.
+It's also one way of getting Dart and GWT to talk to one another. They can
+simply pass messages back and forth. However, since GWT doesn't have native
+support for window.postMessage, I'll need to use JSNI (GWT's JavaScript Native
+Interface).
 
-Slide: Using postMessage to get Dart and GWT to communicate
------------------------------------------------------------
+Slide: Using window.postMessage and JSNI to pass messages between GWT and Dart
+------------------------------------------------------------------------------
 
 In the following, I'm going to show you 6 pieces of code:
 
@@ -389,24 +437,27 @@ By the way, I'm kind of ignoring the origin of the postMessage. You can read
 more about postMessage online to learn about the security implications of
 properly checking the origin, but that's outside the scope of this tutorial.
 
-Slide: Using JavaScript as an intermediary between Dart and GWT
----------------------------------------------------------------
+Slide: Using JavaScript, JSNI, and Dart's js package for synchronous interoperability between GWT and Dart
+----------------------------------------------------------------------------------------------------------
 
-postMessage is a useful tool to have in your toolbox because it can work in a
-variety of situations such as using Native Client or getting pages from different
-domains to talk with one another.
+window.postMessage is a useful tool to have in your toolbox because it can
+work in a variety of situations as I mentioned earlier.
 
 However, since Dart and GWT both have an API for JavaScript interoperability,
-you can use JavaScript as an intermediary between Dart and GWT.
+you can use JavaScript as an intermediary between Dart and GWT. They can even
+synchronously call each other's methods. This lets you do very fine-grained
+interoperability.
 
-This is actually more subtle than it sounds. So far, we haven't been compiling
-Dart to JavaScript. Dartium understands Dart natively. To some extent, this is
-true of GWT in development mode as well. Nonetheless, Dart's JavaScript
-interoperability library works whether the browser is interpreting Dart or
-JavaScript.
+However, this fine-grained interoperability comes with a cost. First of all,
+using Dart's js package can almost double the size of the generated JavaScript
+for Dart. In my sample, it made the JavaScript 89% larger. Secondly, because
+Dart can run natively in Dartium, and because doing distributed garbage
+collection across two virtual machines is non-trivial, using the js package to
+integrate with JavaScript in Dart requires a little more work than in other
+languages that always compile to JavaScript.
 
-Slide: Using JavaScript as an intermediary between Dart and GWT
----------------------------------------------------------------
+Slide: Using JavaScript, JSNI, and Dart's js package for synchronous interoperability between GWT and Dart
+----------------------------------------------------------------------------------------------------------
 
 Rather than show you how to put a single callback function on the window
 object, I'm going to show you how to create a JavaScript module so that you
@@ -550,15 +601,116 @@ Demo: Show the callbacks working
 
 Ok, now that we have all the code, let's try it out. You can see that I can
 call the Dart callback from GWT, and I can call the GWT callback from Dart. It
-really is possible to get GWT and Dart to talk to each other! If you already
-have a large GWT app, but you want to give Dart a try, you shouldn't feel like
-you have to rewrite your whole app. You can dip your toes in the water to see
-if you like it!
+really is possible to get GWT and Dart to talk to each other synchronously
+using JavaScript as an intermediary!
 
-The next step is to compile the GWT code and the Dart code to JavaScript,
-deploy it to Google App Engine, and try it out in a browser other than
-Dartium. However, since there's nothing particularly new or difficult about
-that, I'll leave it as an exercise for the reader.
+Slide: Using CustomEvent objects and Elemental to pass messages between GWT and Dart
+------------------------------------------------------------------------------------
+
+The last approach I'm going to show you is the most bleeding edge. Just like
+the section in which I used window.postMessage to send events between GWT and
+Dart, you can also use CustomEvent objects. However, this time, instead of
+using JSNI to work with APIs that GWT doesn't natively support, I'll show how
+to use Elemental.
+
+Demo: Show: https://developers.google.com/web-toolkit/articles/elemental
+------------------------------------------------------------------------
+
+Elemental is a new library for fast, lightweight, and "to the metal" web
+programming in GWT. It's intended for developers who are comfortable working
+with the browser API's that JavaScript programmers use. Elemental is very
+convenient since it doesn't require you to write any JSNI code. However, it's
+still a fairly new technology. Not only is it woefully underdocumented, but...
+
+Demo: Show: https://code.google.com/p/google-web-toolkit/issues/detail?id=7842
+------------------------------------------------------------------------------
+
+It's also currently incompatible with GWT's Development Mode plugin.
+
+Demo: Show: https://developers.google.com/web-toolkit/articles/superdevmode
+---------------------------------------------------------------------------
+
+One approach is to switch to Super Dev Mode, which is an experimental
+replacement for GWT's Development Mode plugin.
+
+Demo: Show: "However, there are also some disadvantages you should be aware of"
+-------------------------------------------------------------------------------
+
+However, there are are currently a lot of drawbacks to using Super Dev Mode.
+
+After consulting with another GWT developer, I opted for the safe, albeit slow
+and painful route of recompiling to JavaScript and restarting the server every
+time I make a change. This works, although it does put a cramp in your style.
+
+Demo: Generating a CustomEvent object in GWT using Elemental
+------------------------------------------------------------
+
+Let's start with the code to generate a CustomEvent object in GWT using
+Elemental.
+
+Demo: Show imports for elemental
+--------------------------------
+
+First, a word of warning. com.google.gwt and elemental each have separate APIs
+for interacting with the browser. Hence, there's a lot of overlapping class
+names. Pay close attention to where you import classes from. In this section,
+we'll mostly be importing classes from elemental.
+
+Demo: Generating a CustomEvent object in GWT using Elemental
+------------------------------------------------------------
+
+Here's the code to generate a CustomEvent object in GWT.
+
+Just like before, I create a button that the user can click on to generate the
+CustomEvent.
+
+I create the CustomEvent using document.createEvent("CustomEvent"), and I cast
+the return value to a CustomEvent.
+
+For the detail property, I create a JsonObject using JsJsonObject. Notice that
+I don't need to use JSNI to create a JavaScript object. However, there are a
+few quirks. for instance, I have to use JsJsonNumber.create(7) instead of a
+normal 7, otherwise things get confused when Dart tries to unpack the number.
+Finally, I call initCustomEvent() passing in the CustomEvent type and the
+detail property. Then I call window.dispatchEvent().
+
+Demo: Listening for a CustomEvent object in GWT using Elemental
+---------------------------------------------------------------
+
+The code to listen for a CustomEvent is even more straightforward. It too is
+free of JSNI code. I use addEventListener() to listen for the
+"CustomDartEvent". Then, in the event handler, I cast the Event to a
+CustomEvent, call getDetail(), and then unpack everything from there.
+
+Demo: Generating a CustomEvent object in Dart
+---------------------------------------------
+
+Here's the Dart code. Dart has a constructor called CustomEvent. Notice, I'm
+able to pass a normal Dart map for the detail property. Finally, I call
+window.dispatch(event) to dispatch the CustomEvent.
+
+Demo: Listening for a CustomEvent object in Dart
+------------------------------------------------
+
+To listen for CustomEvent objects using the new streams API, I start by
+creating an EventStreamProvider called customEventStreamProvider. You don't
+have to do this for most types of events, but CustomEvents are, well, custom.
+
+Now, I can listen for CustomEvents on the window object. When I receive one, I
+unpack the detail property. In this case, GWT passed a JavaScript object,
+which Dart translates into a map.
+
+Demo: Show the CustomEvents working
+-----------------------------------
+
+To show everything working, I'll need to compile the GWT to JavaScript and
+restart the server. Now, in Dartium, I remove the
+"?gwt.codesvr=127.0.0.1:9997" parameter from the URL and reload the page.
+
+Now I can click the two buttons to pass CustomEvents back and forth between
+GWT and Dart.
+
+It works. Great! The sample is now complete!
 
 Demo: Show the references in the transcript on GitHub
 -----------------------------------------------------
@@ -600,6 +752,24 @@ Serving static files under App Engine:
 
 Using JavaScript from Dart: The js Library:
 	http://www.dartlang.org/articles/js-dart-interop/
+
+Elemental:
+    https://developers.google.com/web-toolkit/articles/elemental
+    http://code.google.com/p/google-web-toolkit/source/browse/trunk/elemental/examples/simple/src/elemental/example
+
+Using CustomEvents in Dart:
+    http://dartery.blogspot.com/2012/09/dart-javascript-interop-through-custom.html
+    http://code.google.com/p/dart/issues/detail?id=5097
+    http://code.google.com/p/dart/source/diff?spec=svn13134&r=13134&format=side&path=/branches/bleeding_edge/dart/tests/html/event_customevent_test.dart
+
+Adding a jar file in Eclipse for use with Google App Engine:
+    http://stackoverflow.com/questions/8285472/including-jar-files-in-eclipse-app-engine-project
+
+Elemental and GWT's Development Mode don't work together:
+    https://groups.google.com/forum/#!msg/google-web-toolkit/HAW2qnHw2kA/HCfCemVM4X0J
+
+Super Dev Mode:
+    https://developers.google.com/web-toolkit/articles/superdevmode
 
 Slide: Thanks for Watching!
 ---------------------------
