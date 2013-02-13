@@ -607,11 +607,17 @@ using JavaScript as an intermediary!
 Slide: Using CustomEvent objects and Elemental to pass messages between GWT and Dart
 ------------------------------------------------------------------------------------
 
-The last approach I'm going to show you is the most bleeding edge. Just like
-the section in which I used window.postMessage to send events between GWT and
-Dart, you can also use CustomEvent objects. However, this time, instead of
-using JSNI to work with APIs that GWT doesn't natively support, I'll show how
-to use Elemental.
+The last approach I'm going to show you is the most bleeding edge.
+
+Just like the section in which I used window.postMessage to send events
+between GWT and Dart, you can also use CustomEvent objects. However, this
+time, instead of using JSNI to work with APIs that GWT doesn't natively
+support, I'll show how to use Elemental.
+
+While I can't say that there was actual blood involved in developing this part
+of the sample, I can say that it was pretty painful. There were a bunch of
+hurdles to overcome, and there isn't much documentation on Elemental or how to
+use CustomEvent objects in GWT and Dart.
 
 Demo: Show: https://developers.google.com/web-toolkit/articles/elemental
 ------------------------------------------------------------------------
@@ -642,37 +648,70 @@ After consulting with another GWT developer, I opted for the safe, albeit slow
 and painful route of recompiling to JavaScript and restarting the server every
 time I make a change. This works, although it does put a cramp in your style.
 
-Demo: Generating a CustomEvent object in GWT using Elemental
-------------------------------------------------------------
+Demo: Setting up gwt-elemental.jar 
+----------------------------------
 
-Let's start with the code to generate a CustomEvent object in GWT using
-Elemental.
+Let's start on the GWT side by setting up Elemental. Elemental does come with
+GWT, but to actually use it, you have to copy the jar file from the SDK bundle
+into your project. I like to do this from the command line.
+
+First, I cd into my eclipse directory:
+
+	cd /Users/jjinux/Local/eclipse
+
+Then, I find the jar file:
+
+	find . -name gwt-elemental.jar
+
+Now, I copy that file into GwtApplication/war/WEB-INF/lib:
+
+	cp ./plugins/com.google.gwt.eclipse.sdkbundle_2.5.0.v201212122042-rel-r42/gwt-2.5.0/gwt-elemental.jar ~/Work/google/src/dart/dart-with-x-samples/gwt/GwtApplication/war/WEB-INF/lib
+
+Now, I have to tell Eclipse to make use of the jar file. Right click on the
+project in Eclipse and hit refresh. Now, navigate to the jar file in Eclipse
+using the left-side pane, right click on it, and add it to build path.
+
+Demo: Setting up Elemental in GwtApplication.gwt.xml
+----------------------------------------------------
+
+Now I have to setup Elemental in the GwtApplication.gwt.xml file. 
+
+All I have to do is say that the module inherits from elemental.Elemental.
+
+At this point, it's not a bad idea to clean the project, run GWT compile, and
+restart the server.
+
+If you're following along, remember that Elemental is currently incompatible
+with GWT's development mode, so from now on, rather than loading
+"http://127.0.0.1:8888/GwtApplication.html?gwt.codesvr=127.0.0.1:9997", we'll
+load the same thing, but without the gwt.codesvr parameter.
 
 Demo: Show imports for elemental
 --------------------------------
 
-First, a word of warning. com.google.gwt and elemental each have separate APIs
-for interacting with the browser. Hence, there's a lot of overlapping class
-names. Pay close attention to where you import classes from. In this section,
-we'll mostly be importing classes from elemental.
+Another word of warning about elemental imports. com.google.gwt and elemental
+each have separate APIs for interacting with the browser. Hence, there's a lot
+of overlapping class names. Pay close attention to where you import classes
+from. In this section, we'll mostly be importing classes from elemental.
 
 Demo: Generating a CustomEvent object in GWT using Elemental
 ------------------------------------------------------------
 
-Here's the code to generate a CustomEvent object in GWT.
+Now, here's the code to generate a CustomEvent object in GWT.
 
 Just like before, I create a button that the user can click on to generate the
 CustomEvent.
 
 I create the CustomEvent using document.createEvent("CustomEvent"), and I cast
-the return value to a CustomEvent.
+the return value to a CustomEvent. For the detail property, I create a
+JsonObject using JsJsonObject.create(). Notice that I don't need to use JSNI
+to create a JavaScript object. Next, I shove a bunch of data into it. Next, I
+call initCustomEvent() passing in the CustomEvent type and the detail
+property. I serialize the detail object to JSON using the toJson() method.
+Finally, I call window.dispatchEvent().
 
-For the detail property, I create a JsonObject using JsJsonObject. Notice that
-I don't need to use JSNI to create a JavaScript object. However, there are a
-few quirks. for instance, I have to use JsJsonNumber.create(7) instead of a
-normal 7, otherwise things get confused when Dart tries to unpack the number.
-Finally, I call initCustomEvent() passing in the CustomEvent type and the
-detail property. Then I call window.dispatchEvent().
+It may be possible to skip serialization to JSON, but I wasn't able to get it
+to work under both Dartium and dart2js.
 
 Demo: Listening for a CustomEvent object in GWT using Elemental
 ---------------------------------------------------------------
@@ -680,14 +719,16 @@ Demo: Listening for a CustomEvent object in GWT using Elemental
 The code to listen for a CustomEvent is even more straightforward. It too is
 free of JSNI code. I use addEventListener() to listen for the
 "CustomDartEvent". Then, in the event handler, I cast the Event to a
-CustomEvent, call getDetail(), and then unpack everything from there.
+CustomEvent. I unpack the detail property using Json.parse. After that, it's
+smooth sailing!
 
 Demo: Generating a CustomEvent object in Dart
 ---------------------------------------------
 
-Here's the Dart code. Dart has a constructor called CustomEvent. Notice, I'm
-able to pass a normal Dart map for the detail property. Finally, I call
-window.dispatch(event) to dispatch the CustomEvent.
+I create a normal Dart map with all the data I want to pass. Next, I create a
+CustomEvent using Dart's CustomEvent constructor. I serialize the detail to
+JSON using JSON.stringify. Finally, I call window.dispatch(event) to dispatch
+the CustomEvent.
 
 Demo: Listening for a CustomEvent object in Dart
 ------------------------------------------------
@@ -697,20 +738,37 @@ creating an EventStreamProvider called customEventStreamProvider. You don't
 have to do this for most types of events, but CustomEvents are, well, custom.
 
 Now, I can listen for CustomEvents on the window object. When I receive one, I
-unpack the detail property. In this case, GWT passed a JavaScript object,
-which Dart translates into a map.
+unpack the detail property using JSON.parse. JSON.parse returns a normal Dart
+map. After that, it's once again smooth sailing.
 
 Demo: Show the CustomEvents working
 -----------------------------------
 
-To show everything working, I'll need to compile the GWT to JavaScript and
+To show everything working, I need to compile the GWT to JavaScript and
 restart the server. Now, in Dartium, I remove the
 "?gwt.codesvr=127.0.0.1:9997" parameter from the URL and reload the page.
 
 Now I can click the two buttons to pass CustomEvents back and forth between
 GWT and Dart.
 
-It works. Great! The sample is now complete!
+Great! It works.
+
+Demo: Show it working in Chrome
+-------------------------------
+
+Dartium's great, but let's compile the Dart to JavaScript and show the
+application working in regular Chrome.
+
+Demo: Show it working in Firefox
+--------------------------------
+
+Now, let's show it working in Firefox.
+
+Awesome! My work here is done!
+
+I hope I've convinced you that if you already have a large GWT app, but you
+want to give Dart a try, you shouldn't feel like you have to rewrite your
+whole app. You can dip your toes in the water to see if you like it!
 
 Demo: Show the references in the transcript on GitHub
 -----------------------------------------------------
@@ -756,6 +814,7 @@ Using JavaScript from Dart: The js Library:
 Elemental:
     https://developers.google.com/web-toolkit/articles/elemental
     http://code.google.com/p/google-web-toolkit/source/browse/trunk/elemental/examples/simple/src/elemental/example
+    http://jooink.blogspot.com/2012/10/webgl-tinysample.html
 
 Using CustomEvents in Dart:
     http://dartery.blogspot.com/2012/09/dart-javascript-interop-through-custom.html
@@ -763,6 +822,7 @@ Using CustomEvents in Dart:
     http://code.google.com/p/dart/source/diff?spec=svn13134&r=13134&format=side&path=/branches/bleeding_edge/dart/tests/html/event_customevent_test.dart
 
 Adding a jar file in Eclipse for use with Google App Engine:
+    http://www.wikihow.com/Add-JARs-to-Project-Build-Paths-in-Eclipse-(Java)
     http://stackoverflow.com/questions/8285472/including-jar-files-in-eclipse-app-engine-project
 
 Elemental and GWT's Development Mode don't work together:
