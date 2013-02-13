@@ -15,7 +15,6 @@ import elemental.events.CustomEvent;
 import elemental.events.Event;
 import elemental.events.EventListener;
 import elemental.html.Window;
-import elemental.js.json.JsJsonNumber;
 import elemental.js.json.JsJsonObject;
 import elemental.json.Json;
 import elemental.json.JsonObject;
@@ -69,7 +68,7 @@ public class GwtApplication implements EntryPoint {
       public void onClick(ClickEvent event) {
         CustomEvent customEvent = (CustomEvent) document.createEvent("CustomEvent");
         JsonObject detail = JsJsonObject.create();
-        detail.put("n", JsJsonNumber.create(7));
+        detail.put("n", 7);
         detail.put("s", "Hello from GWT");
         JsonObject obj = JsJsonObject.create();
         obj.put("hello", "from GWT");
