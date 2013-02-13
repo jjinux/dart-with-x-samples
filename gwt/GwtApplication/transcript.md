@@ -270,7 +270,7 @@ Notice that I'm using Chrome to debug the source code even though the normal
 version of Chrome doesn't yet understand Dart code.
 
 Slide: Using Dart to retrieve JSON from a Java servlet
-----------------------------------------------------
+------------------------------------------------------
 
 If you're using GWT, it's very likely you have Java on the server too. Hence,
 it's important that your Dart code be able to talk to your Java code on the
@@ -727,7 +727,7 @@ Demo: Generating a CustomEvent object in Dart
 
 I create a normal Dart map with all the data I want to pass. Next, I create a
 CustomEvent using Dart's CustomEvent constructor. I serialize the detail to
-JSON using JSON.stringify. Finally, I call window.dispatch(event) to dispatch
+JSON using json.stringify. Finally, I call window.dispatch(event) to dispatch
 the CustomEvent.
 
 Demo: Listening for a CustomEvent object in Dart
@@ -738,7 +738,7 @@ creating an EventStreamProvider called customEventStreamProvider. You don't
 have to do this for most types of events, but CustomEvents are, well, custom.
 
 Now, I can listen for CustomEvents on the window object. When I receive one, I
-unpack the detail property using JSON.parse. JSON.parse returns a normal Dart
+unpack the detail property using json.parse. json.parse returns a normal Dart
 map. After that, it's once again smooth sailing.
 
 Demo: Show the CustomEvents working
@@ -769,6 +769,18 @@ Awesome! My work here is done!
 I hope I've convinced you that if you already have a large GWT app, but you
 want to give Dart a try, you shouldn't feel like you have to rewrite your
 whole app. You can dip your toes in the water to see if you like it!
+
+Slide: Other things of interest
+-------------------------------
+
+Here are a couple of other projects that you might be interested in, although
+I haven't had a chance yet to check them out:
+
+http://pub.dartlang.org/packages/dart_web_toolkit
+	Dart Web Toolkit is a clone of GWT to Dart.
+
+https://github.com/danrubel/java2dart
+	java2dart ports Java syntax to Dart.
 
 Demo: Show the references in the transcript on GitHub
 -----------------------------------------------------

@@ -1,5 +1,5 @@
 import "dart:html";
-import "dart:json" as JSON;
+import "dart:json" as json;
 import 'package:js/js.dart' as js;
 
 DivElement dartDiv;
@@ -13,8 +13,8 @@ main() {
   
   // Request some JSON from the server. You can use the "dart:json" library
   // to parse it.
-  HttpRequest.getString("/gwt_application/json_servlet").then((json) {
-    printString("Here's the JSON I got: $json");
+  HttpRequest.getString("/gwt_application/json_servlet").then((jsonStr) {
+    printString("Here's the JSON I got: $jsonStr");
   }).catchError((e) {
     printString("Couldn't fetch JSON: ${e.error}");
   });
@@ -68,14 +68,14 @@ main() {
         }
       };  
       var event = new CustomEvent("CustomDartEvent",
-          canBubble: false, cancelable: false, detail: JSON.stringify(detail));
+          canBubble: false, cancelable: false, detail: json.stringify(detail));
       window.dispatchEvent(event);
     });
   dartDiv.children.add(customEventButton);
   
   // Listen for CustomEvents called CustomGwtEvent.
   customEventStreamProvider.forTarget(window).listen((e) {
-    var detail = JSON.parse(e.detail);
+    var detail = json.parse(e.detail);
     printString("""
       Received a ${e.type} with
       n: ${detail["n"]},
