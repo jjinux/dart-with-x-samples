@@ -62,24 +62,27 @@ Developer Plugin" for Chrome.
 Demo: Show: http://www.dartlang.org
 -----------------------------------
 
-To install Dart, head on over to dartlang.org. I used Dart Editor to build the
-sample application.
+To install Dart, head on over to dartlang.org.
 
 Demo: Show: http://www.dartlang.org/docs/editor/getting-started/
 ----------------------------------------------------------------
 
-If you've never installed Dart Editor before, there's a Getting Started guide.
+If you've never installed Dart Editor before, there's even a Getting Started
+guide.
 
 Slide: .bashrc
 --------------
 
-I like to use dart and pub from the command line, so I have the following in
-my .bashrc:
+I like to use dart and various tools from the command line, so I have the
+following in my .bashrc:
 
 export DART_SDK=~/Local/dart/dart-sdk
 export PATH=$PATH:~/Local/dart/dart-sdk/bin
 
-However, you can also rely on Dart Editor to run pub for you.
+Of course, you'll have to change those paths to match wherever you put Dart
+Editor.
+
+However, you can also rely on Dart Editor to run those tools for you.
 
 Demo: Show Dart Editor
 ----------------------
