@@ -74,6 +74,8 @@ main() {
   dartDiv.children.add(customEventButton);
   
   // Listen for CustomEvents called CustomGwtEvent.
+  // In a week or two, we should be able to get rid of customEventStreamProvider
+  // and just write: window.on['CustomGwtEvent'].listen(...).
   customEventStreamProvider.forTarget(window).listen((e) {
     var detail = json.parse(e.detail);
     printString("""
