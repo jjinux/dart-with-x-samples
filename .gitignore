@@ -3,6 +3,8 @@ packages
 *.dart.js
 *.dart.js.deps
 *.dart.js.map
+.buildlog
+testacular/dart_application/web/out
 
 # GWT
 # I'm leaving the *.jar files in Git since this project doesn't use Maven.
