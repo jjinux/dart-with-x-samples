@@ -15,3 +15,6 @@ gwt/GwtApplication/gwt-unitCache
 gwt/GwtApplication/war/WEB-INF/classes
 gwt/GwtApplication/war/WEB-INF/deploy
 gwt/GwtApplication/war/gwtapplication
+
+# OS X
+.DS_Store
